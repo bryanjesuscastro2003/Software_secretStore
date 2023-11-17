@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-white text-lg">Secret Store</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <!-- User is not authenticated, hide the logout button -->
+                        {% if is_authenticated %}
+                        <button class="ml-4 bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
+                        {% else %}
+                        <button class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Login</button>
+                        <button class="ml-4 bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Signup</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block main %}
+        {% endblock %}
+    </main>
+
+</body>
+
+</html>
