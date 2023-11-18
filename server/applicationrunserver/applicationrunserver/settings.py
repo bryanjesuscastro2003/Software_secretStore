@@ -120,3 +120,15 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authService.UserServer'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jesusbryan155@gmail.com'
+EMAIL_HOST_PASSWORD = 'rzfqruzirizmhzyy'
+
+SERET_TEXT_FOR_PASSWORD = b'03-XxmSKCiC5UyenTTfbw1NFdSMrIWwqdVRKqnHrHvg='
+SECRET_TEXT_FOR_JWT = b'EpL4-BZuiXPTgfhkVQmUn1BxgFY60ow3pWN39ZfXi5c='
+
+DOMAIN = "localhost:9000"

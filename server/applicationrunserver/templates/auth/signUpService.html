@@ -2,6 +2,34 @@
 
 {% block main %}
 
+<style>
+    .loader {
+        border-top-color: #3498db;
+        -webkit-animation: spinner 1.5s linear infinite;
+        animation: spinner 1.5s linear infinite;
+    }
+
+    @-webkit-keyframes spinner {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spinner {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
 <div class="container mx-auto px-4 py-8">
     <h2 class="text-2xl font-bold mb-4">Sign Up</h2>
     <form id="signup-form">
@@ -47,14 +75,32 @@
 
         <label id="statusValidationDataSintax" class="text-red-500"></label>
         <label id="statusValidationDataUnavailable" class="text-red-500"></label>
+        <label id="statusValidationDataCreated" class="text-green-500"></label>
+
+        <div id="loading" class=""></div>
+
 
     </form>
 </div>
 
+
+
 <script>
     document.getElementById("signup-form").addEventListener("submit", async event => {
         event.preventDefault(); // Prevent the form from submitting
-
+        document.getElementById("loading").classList.add("loader");
+        document.getElementById("loading").classList.add("ease-linear");
+        document.getElementById("loading").classList.add("rounded-full");
+        document.getElementById("loading").classList.add("border-4");
+        document.getElementById("loading").classList.add("border-t-4");
+        document.getElementById("loading").classList.add("border-gray-200");
+        document.getElementById("loading").classList.add("h-12");
+        document.getElementById("loading").classList.add("w-12");
+        document.getElementById("loading").classList.add("mb-4");
+        document.getElementById("statusValidationDataCreated").className = ""
+        document.getElementById("statusValidationDataSintax").textContent = ""
+        document.getElementById("statusValidationDataUnavailable").textContent = ""
+        document.getElementById("statusValidationDataCreated").textContent = "";
         // Get the form data
         var name = document.getElementById("name").value;
         var lastname = document.getElementById("lastname").value;
@@ -75,49 +121,58 @@
 
         // Get the CSRF token
         var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
-        console.log(csrfToken);
         // Add the CSRF token to the request headers
         var headers = {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken
         };
-
-        // Send the POST request using fetch
         try {
             const response = await fetch("/auth/signUp/", {
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify(requestBody)
-            });
-            document.getElementById("statusValidationDataSintax").textContent = ""
-            document.getElementById("statusValidationDataUnavailable").textContent = ""
+            })
             response.json().then(data => {
-                console.log(data);  
+                //document.getElementById("loading").style.cssText.display = "none"
+                document.getElementById("loading").className = ""; // Remove all CSS classes from the "loading" element
                 var statusLabels = document.querySelectorAll("[id^='status']");
-                    statusLabels.forEach(label => {
-                        label.textContent = "";
-                    });
+                statusLabels.forEach(label => {
+                    label.textContent = "";
+                });
                 if (data.ok === true) {
-                    document.getElementById("statusValidationDataSintax").textContent = data.statusValidationDataSintax;
-                    document.getElementById("statusValidationDataUnavailable").textContent = data.statusValidationDataUnavailable;
-                    if (data.statusSintaxDataVaidation) {
-                        data.statusSintaxDataVaidation.forEach(element => {
-                            if (!element.state) {
-                                document.getElementById("status" + element.nameField).textContent = "Invalid sintax data this field is required , at least 4 chars and at most 30 chars ";
-                            } else {
-                                document.getElementById("status" + element.nameField).textContent = ""
-                            }
-                        });
-                    }
-                    if(data.statusUnavailableDataVaidation){
-                       data.statusUnavailableDataVaidation.forEach(element => {
-                            if (!element.state) {
-                                document.getElementById("status" + element.nameField).textContent = document.getElementById("status" + element.nameField).textContent.split("@")[0].trim();
-                                document.getElementById("status" + element.nameField).textContent += " @ Data has been already  registered choose another one . ";
-                            } else {
-                                document.getElementById("status" + element.nameField).textContent = document.getElementById("status" + element.nameField).textContent.split("@")[0].trim();
-                            }
-                       }) 
+                    if (data.userCreated) {
+                        document.getElementById("statusValidationDataCreated").classList.add("text-green-500");
+                        document.getElementById("statusValidationDataCreated").textContent = data.message
+                        document.getElementById("name").value = "";
+                        document.getElementById("lastname").value = "";
+                        document.getElementById("username").value = "";
+                        document.getElementById("email").value = "";
+                        document.getElementById("password").value = "";
+                        document.getElementById("phoneNumber").value = "";
+                    } else {
+                        document.getElementById("statusValidationDataCreated").classList.add("text-red-500");
+                        document.getElementById("statusValidationDataCreated").textContent = data.message
+                        document.getElementById("statusValidationDataSintax").textContent = data.statusValidationDataSintax;
+                        document.getElementById("statusValidationDataUnavailable").textContent = data.statusValidationDataUnavailable;
+                        if (data.statusSintaxDataVaidation) {
+                            data.statusSintaxDataVaidation.forEach(element => {
+                                if (!element.state) {
+                                    document.getElementById("status" + element.nameField).textContent = "Invalid sintax data this field is required , at least 4 chars and at most 30 chars ";
+                                } else {
+                                    document.getElementById("status" + element.nameField).textContent = ""
+                                }
+                            });
+                        }
+                        if (data.statusUnavailableDataVaidation) {
+                            data.statusUnavailableDataVaidation.forEach(element => {
+                                if (!element.state) {
+                                    document.getElementById("status" + element.nameField).textContent = document.getElementById("status" + element.nameField).textContent.split("@")[0].trim();
+                                    document.getElementById("status" + element.nameField).textContent += " @ Data has been already  registered choose another one . ";
+                                } else {
+                                    document.getElementById("status" + element.nameField).textContent = document.getElementById("status" + element.nameField).textContent.split("@")[0].trim();
+                                }
+                            })
+                        }
                     }
                 }
             });
