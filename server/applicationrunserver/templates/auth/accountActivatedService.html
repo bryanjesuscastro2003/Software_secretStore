@@ -1,0 +1,24 @@
+{% extends '../base/Header.html' %} {% block main %}
+<div class="flex justify-center items-center h-screen">
+  <div class="bg-gray-200 p-8 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-4">{{ message }}</h1>
+    <div class="flex justify-between">
+      {% if not ok %}
+      <button
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        onclick="window.location.href='{% url 'RESENDACTIVATORSERVICE' %}'"
+      >
+        Resend Email Verifier
+      </button>
+      {% else %}
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onclick="window.location.href='{% url 'SIGNINSERVICE' %}'"
+      >
+        Login
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

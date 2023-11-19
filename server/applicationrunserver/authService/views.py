@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from common.ValidateData import *
 from common.EmailActions import send_email
-from common.Codes import generate_jwt, encrypt_text
+from common.Codes import generate_jwt, encrypt_text, validate_jwt
 from .queries.Repository import FindByFieldInput, UserQueryRepository 
 from .commands.CommancRepository import UserCommandRepository
 import json
@@ -86,7 +86,45 @@ def signUpService(request):
 
         return JsonResponse(response_data, status=200)
 
-    return render(request, 'auth/signUpService.html', {"is_authenticated": False})
+    return render(request, 'auth/signUpService.html')
 
 
+def activateAccountService(request, token:str):
+    ok, payload = validate_jwt(token, settings.SECRET_TEXT_FOR_JWT)
+    message = payload if not ok else None
+    print(payload)
+    if ok:
+        userCommandRepository = UserCommandRepository()
+        userActivated = userCommandRepository.activateUser(payload.get("username"), True)
+        if userActivated:
+            message = "Your account has been activated successfully."
+        else:
+            ok = False
+            message = "Unexpected error activating your account try again later ."
+    return render(request, 'auth/accountActivatedService.html', {"ok": ok, "message": message})
 
+def resendActivatorService(request):
+    if request.method == 'POST':
+        body = request.body.decode('utf-8')
+        data = json.loads(body)
+        inputData = [
+            FindByFieldInput("email", data.get('email'))
+        ]
+        userQueryRepository = UserQueryRepository()
+        responseQueryData = asyncio.run(userQueryRepository.findUserByField(inputData))#await userQueryRepository.findUserByField(inputData)
+        accountRegistered = False if responseQueryData[0].data is None else True if not responseQueryData[0].data.is_active else False
+        jsonResponse = {"ok": False, "message": "The email is not registered in our system or has been already activated."}
+        if accountRegistered:
+            jwt = generate_jwt({
+                "username": responseQueryData[0].data.username,
+            },settings.SECRET_TEXT_FOR_JWT, 1) 
+            send_email("EmailVerifier", 
+                    f"Click here to activate your account : \n http://{settings.DOMAIN}/auth/activateAccount/{jwt}/", 
+                    data.get('email'))
+            jsonResponse["ok"] = True
+            jsonResponse["message"] = "Email sent successfully."
+        return JsonResponse(jsonResponse, status=200)
+    return render(request, 'auth/resendActivatorService.html')
+
+def signInService(request):
+    return render(request, 'auth/signInService.html')

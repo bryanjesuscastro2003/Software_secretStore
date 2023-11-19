@@ -63,7 +63,7 @@ class UserServer(AbstractBaseUser):
     phone = models.CharField(max_length=30, unique=True)
     signSecret = models.TextField(null=False, blank=False, default='')
     role = models.CharField(choices=Roles.choices, default=Roles.USER, max_length=50)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_staff = models.BooleanField(default=False)
