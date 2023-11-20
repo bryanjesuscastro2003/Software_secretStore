@@ -34,11 +34,15 @@ def decrypt_text(key, encrypted_text):
     Returns:
         str: The decrypted text.
     """
-    fernet = Fernet(key)
-    encrypted_bytes = encrypted_text.encode()
-    decrypted_bytes = fernet.decrypt(encrypted_bytes)
-    decrypted_text = decrypted_bytes.decode()
-    return decrypted_text
+    try:
+        fernet = Fernet(key)
+        encrypted_bytes = encrypted_text.encode()
+        decrypted_bytes = fernet.decrypt(encrypted_bytes)
+        decrypted_text = decrypted_bytes.decode()
+        return decrypted_text
+    except Exception as e:
+        return None
+
 
 
 def generate_random_text(size):
@@ -90,6 +94,7 @@ def validate_jwt(encoded_jwt, secret):
         return False, 'Token expired'
     except jwt.InvalidTokenError:
         return False, 'Invalid token'
+    
 
 
 

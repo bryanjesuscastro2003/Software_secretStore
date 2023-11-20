@@ -14,9 +14,10 @@ SECRET_KEY = 'django-insecure-nc=ntl=qos_#t@a%3x3^eca7w#epixk*-&=l6uf$$8gfp&lbrf
 DEBUG = True
 
 ALLOWED_HOSTS = []
+  
+SITE_ID=2
 
 # Application definition
-
 
 BASE_APPS = [
     'django.contrib.admin',
@@ -25,17 +26,32 @@ BASE_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites', 
 ]
 
 LOCAL_APPS = [
     'authService',
+    'dashboardService'
 ]
 
 THIRD_APPS = [
-
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google" : {
+        "SCOPE": [
+            "profile",
+            "email"
+        ],
+        "AUTH_PARAMS" : {"access_type": "online"}
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -45,9 +61,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'authService.middleware.AuthMiddleware.AuthMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
-ROOT_URLCONF = 'applicationrunserver.urls'
+ROOT_URLCONF = 'applicationrunserver.urls' 
 
 TEMPLATES = [
     {
@@ -115,6 +133,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -128,7 +147,17 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'jesusbryan155@gmail.com'
 EMAIL_HOST_PASSWORD = 'rzfqruzirizmhzyy'
 
-SERET_TEXT_FOR_PASSWORD = b'03-XxmSKCiC5UyenTTfbw1NFdSMrIWwqdVRKqnHrHvg='
+SECRET_TEXT_FOR_PASSWORD = b'03-XxmSKCiC5UyenTTfbw1NFdSMrIWwqdVRKqnHrHvg='
 SECRET_TEXT_FOR_JWT = b'EpL4-BZuiXPTgfhkVQmUn1BxgFY60ow3pWN39ZfXi5c='
 
 DOMAIN = "localhost:9000"
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend"
+)
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+LOGIN_REDIRECT_URL = "/auth/google/feedback/"
+LOGOUT_REDIRECT_URL = "/auth/signIn/"
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'

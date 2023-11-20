@@ -60,18 +60,18 @@ class UserServer(AbstractBaseUser):
     lastname = models.CharField(max_length=30, unique=False)   
     username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(max_length=30, unique=True)
-    phone = models.CharField(max_length=30, unique=True)
-    signSecret = models.TextField(null=False, blank=False, default='')
+    phone = models.CharField(max_length=30, null=True, blank=True)
+    signSecret = models.TextField(blank=True, default='')
     role = models.CharField(choices=Roles.choices, default=Roles.USER, max_length=50)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-
+  
     objects = MyUserManager() 
- 
-    USERNAME_FIELD = 'email'
+   
+    USERNAME_FIELD = 'email' 
     REQUIRED_FIELDS = ['username', 'name', 'lastname', 'phone', 'signSecret', 'role']
 
     def __str__(self):

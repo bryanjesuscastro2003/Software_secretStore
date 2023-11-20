@@ -19,7 +19,7 @@
                     <div class="ml-4 flex items-center md:ml-6">
                         <!-- User is not authenticated, hide the logout button -->
                         {% if user.is_authenticated and not user.is_superuser %}
-                        <button class="ml-4 bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
+                        <button class="ml-4 bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" onclick="window.location.href='{% url 'LOGOUTSERVICE' %}'" >Logout</button>
                         {% else %}
                         <button class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" onclick="window.location.href='{% url 'SIGNINSERVICE' %}'">Signin</button>
                         <button class="ml-4 bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" onclick="window.location.href='{% url 'SIGNUPSERVICE' %}'">Signup</button>

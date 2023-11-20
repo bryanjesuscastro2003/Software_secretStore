@@ -41,7 +41,8 @@ class UserCommandRepository:
                     email=email, 
                     name=name, 
                     phone=phone,
-                    lastname=lastname
+                    lastname=lastname,
+                    is_active=False
                     )
             user.save()
             return True
@@ -59,7 +60,7 @@ class UserCommandRepository:
         user = UserServer.objects.get(username=username)
         user.delete()
 
-    def updateUser(self, username: str, password: str, email: str, firstName: str, lastName: str) -> None:
+    def updateUser(self, username: str, password: str, email: str) -> None:
         """
         Updates a user with the specified username, password, email, first name, and last name.
 
@@ -94,18 +95,19 @@ class UserCommandRepository:
             return False
 
 
-    def updateUser(self, username: str, password: str, email: str, firstName: str, lastName: str) -> None:
+    def updateUserPassword(self, username: str, password: str) -> bool:
         """
-        Updates a user with the specified username, password, email, first name, and last name.
+        Updates a user with the specified username, password.
 
         Args:
             username (str): The username of the user.
             password (str): The password of the user.
-            email (str): The email of the user.
-            firstName (str): The first name of the user.
-            lastName (str): The last name of the user.
         """
-        user = UserServer.objects.get(username=username)
-        user.password = password
-        user.email = email
+        try:
+            user = UserServer.objects.get(username=username)
+            user.password = password
+            user.save()
+            return True
+        except UserServer.DoesNotExist:
+            return False
     
